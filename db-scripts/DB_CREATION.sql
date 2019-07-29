@@ -6,7 +6,7 @@ CREATE SCHEMA USERSDB;
 -- Create and populate the tables used in the AUTHDB database
 
 CREATE TABLE USERSDB.USER (
-                              ID BIGINT AUTO_INCREMENT PRIMARY KEY,
+                              USER_ID BIGINT AUTO_INCREMENT PRIMARY KEY,
                               USERNAME VARCHAR(60) NOT NULL,
                               PASSWORD VARCHAR(128) NOT NULL,
                               EMAIL CHAR(40),
@@ -15,15 +15,15 @@ CREATE TABLE USERSDB.USER (
 );
 
 
-INSERT INTO USERSDB.USER (ID, USERNAME, EMAIL, PASSWORD, ROLE) VALUES (1, 'Ahmed', 'ahmed@gmail.com', 'ahmed', 'admin');
-INSERT INTO USERSDB.USER (ID, USERNAME, EMAIL, PASSWORD, ROLE) VALUES (2, 'Amr', 'amr@gmail.com', 'amr', 'user');
+INSERT INTO USERSDB.USER (USER_ID, USERNAME, EMAIL, PASSWORD, ROLE) VALUES (1, 'Ahmed', 'ahmed@gmail.com', 'ahmed', 'admin');
+INSERT INTO USERSDB.USER (USER_ID, USERNAME, EMAIL, PASSWORD, ROLE) VALUES (2, 'Amr', 'amr@gmail.com', 'amr', 'user');
 
 CREATE TABLE USERSDB._GROUP (
-                                ID BIGINT AUTO_INCREMENT PRIMARY KEY,
+                                GROUP_ID BIGINT AUTO_INCREMENT PRIMARY KEY,
                                 GROUPNAME VARCHAR(60) NOT NULL
 );
 
-INSERT INTO USERSDB._GROUP (ID, GROUPNAME) VALUES (1, 'Group1');
+INSERT INTO USERSDB._GROUP (GROUP_ID, GROUPNAME) VALUES (1, 'Group1');
 
 
 CREATE TABLE USERSDB.GROUP_USERS(
