@@ -6,15 +6,15 @@ import java.util.List;
 
 
 @Entity
-@Table(name = "users")
-//@NamedQuery(name = "employee.findAll", query="SELECT emp FROM employee emp")
+@Table(name = "user")
+@NamedQuery(name = "user.findAll", query="SELECT usr FROM user usr")
 
 public class user implements Serializable {
 
     @Id
-    @Column(name = "USER_ID")
+    @Column(name = "USERID")
     //@GeneratedValue (strategy = GenerationType.IDENTITY)
-    private String userID;
+    private int userID;
     @Column (name = "USERNAME")
     private String username;
     @Column (name = "PASSWORD")
@@ -29,17 +29,17 @@ public class user implements Serializable {
 
     @ManyToMany
     @JoinTable(
-            name = "groupUsers",
-            joinColumns = @JoinColumn(name = "USER_ID"),
+            name = "group_users",
+            joinColumns = @JoinColumn(name = "USERID"),
             inverseJoinColumns = @JoinColumn(name = "GROUP_ID"))
     List<group> groups;
 
 
-    public String getUserID() {
+    public int getUserID() {
         return userID;
     }
 
-    public void setUserID(String userID) {
+    public void setUserID(int userID) {
         this.userID = userID;
     }
 

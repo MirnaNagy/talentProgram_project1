@@ -1,12 +1,14 @@
 package Entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.List;
 
 
 @Entity
-@Table(name = "grp")
+@Table(name = "_group")
 public class group implements Serializable {
 
     @Id
@@ -15,12 +17,11 @@ public class group implements Serializable {
     private String groupID;
     @Column (name = "GROUPNAME")
     private String groupname;
-
-
+    @JsonIgnore
     @ManyToMany
     @JoinTable(
-            name = "groupUsers",
-            joinColumns = @JoinColumn(name = "USER_ID"),
+            name = "group_users",
+            joinColumns = @JoinColumn(name = "USERID"),
             inverseJoinColumns = @JoinColumn(name = "GROUP_ID"))
     List<user> users;
 
