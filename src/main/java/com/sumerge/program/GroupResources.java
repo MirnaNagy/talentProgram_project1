@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.SecurityContext;
 
 import java.util.logging.Logger;
 
@@ -18,7 +19,7 @@ import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 @RequestScoped
 @Produces(APPLICATION_JSON)
 @Consumes(APPLICATION_JSON)
-@Path("Group")
+@Path("groups")
 
 
 public class GroupResources {
@@ -29,11 +30,14 @@ public class GroupResources {
     @Context
     HttpServletRequest request;
 
+    @Context
+    private SecurityContext securityContext;
+
     @GET
     public Response getAllGroups() {
         try {
             return Response.ok().
-                    entity(repo.getAllGroups()).
+                    entity(repo.getAllGroups(securityContext.getUserPrincipal().toString())).
                     build();
         } catch (Exception e) {
             LOGGER.log(SEVERE, e.getMessage(), e);
@@ -49,7 +53,7 @@ public class GroupResources {
         try {
             if (g.getGroupID() == -1)
                 throw new IllegalArgumentException("Can't add Group");
-            repo.addGroup(g);
+            repo.addGroup(g, securityContext.getUserPrincipal().toString());
             return Response.ok().
                     build();
         } catch (Exception e) {
@@ -67,7 +71,7 @@ public class GroupResources {
         try {
             if (g.getGroupID() == -1)
                 throw new IllegalArgumentException("Can't add Group");
-            repo.deleteGroup(g);
+            repo.deleteGroup(g, securityContext.getUserPrincipal().toString());
             return Response.ok().
                     build();
         } catch (Exception e) {

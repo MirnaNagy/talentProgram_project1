@@ -1,5 +1,6 @@
 package com.sumerge.program;
 
+
 import entities.Group;
 import entities.User;
 
@@ -15,12 +16,6 @@ import java.util.List;
 public class UserRepo {
 
     EntityManager entityManager = JPAUtil.getEntityManagerFactory().createEntityManager();
-   // static ArrayList<User> usersList = new ArrayList<User>();
-
-//
-//    public UserRepo() {
-//        usersList.add(new User(1, "Ahmed", "ahmed@gmail.com", "ahmed", "admin", false));
-//    }
 
 
 
@@ -37,7 +32,7 @@ public class UserRepo {
 
 
     @Transactional(rollbackOn = Exception.class)
-    public List<User> getAllUsers(boolean adm) {
+    public List<User> getAllUsers(boolean adm, String author) {
         entityManager.getTransaction().begin();
         List<User> results;
         if(adm) {
@@ -47,30 +42,17 @@ public class UserRepo {
         else {
             TypedQuery<User> query = entityManager.createNamedQuery("user.findAll", User.class);
             results = query.getResultList();
-//            Query query = entityManager.createNativeQuery("SELECT usr.userID, usr.username, usr.email FROM User usr WHERE usr.delete= false");
-//            results = query.getResultList();
-
         }
 
-
-
-//        try {
-//            for (int i = 0; i < results.size(); i++) {
-//                String hashed = sha256(results.get(i).getPassword());
-//                results.get(i).setPassword(hashed);
-//            }
-//        }catch (Exception e) {
-//            System.out.println(e);
-//        }
-
-      //  System.out.println("RESSSULTTTTTTTTTTTTSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS" + results.get(0).getGroups().get(0).getGroupname());
         entityManager.getTransaction().commit();
+        AuditLogRepo.createLog(results, "Get all users", author);
+
         return results;
     }
 
 
     @Transactional(rollbackOn = Exception.class)
-    public void addUser(User u, boolean adm) {
+    public void addUser(User u, boolean adm, String author) {
         if(adm) {
             entityManager.getTransaction().begin();
             try {
@@ -80,38 +62,43 @@ public class UserRepo {
             }
             entityManager.persist(u);
             entityManager.getTransaction().commit();
+            AuditLogRepo.createLog(u, "Add user", author);
+
             //return u;
         }
         else {
-            System.out.println("CAN'TTT ADD USER ENTA MSH ADMIN");
+            System.out.println("CAN'T ADD USER, YOU ARE NOT THE ADMIN");
         }
     }
 
 
     @Transactional(rollbackOn = Exception.class)
-    public void deleteUser(String username, String password) {
+    public void deleteUser(String username, String password, String author) {
         entityManager.getTransaction().begin();
 //        entityManager.remove(u);
         Query query = entityManager.createQuery("SELECT u FROM User u WHERE u.username=:username AND u.password=:password ").setParameter("username", username).setParameter("password", password);
         User u = (User) query.getSingleResult();
         u.setDelete(true);
         entityManager.getTransaction().commit();
+        AuditLogRepo.createLog(u, "Soft delete", author);
     }
 
 
 
     @Transactional(rollbackOn = Exception.class)
-    public void undoDelete(String username, String password) {
+    public void undoDelete(String username, String password, String author) {
         entityManager.getTransaction().begin();
         Query query = entityManager.createQuery("SELECT u FROM User u WHERE u.username=:username AND u.password=:password ").setParameter("username", username).setParameter("password", password);
         User u = (User) query.getSingleResult();
         u.setDelete(false);
         entityManager.getTransaction().commit();
+        AuditLogRepo.createLog(u, "Undo delete", author);
+
     }
 
 
     @Transactional(rollbackOn = Exception.class)
-    public void addUserToGroup(String username, String groupname)
+    public void addUserToGroup(String username, String groupname, String author)
     {
         entityManager.getTransaction().begin();
         Query query = entityManager.createQuery("SELECT u FROM User u WHERE u.username=:username").setParameter("username", username);
@@ -129,11 +116,13 @@ public class UserRepo {
         System.out.println("GRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRROOOUUPP" + "   " + Ugroups);
 
         entityManager.getTransaction().commit();
+        AuditLogRepo.createLog(u, "Adding " + u.getUsername() +  "to " + grp.getGroupname(), author);
+
     }
 
 
     @Transactional(rollbackOn = Exception.class)
-    public void removeUserFromGroup(String username, String groupname) {
+    public void removeUserFromGroup(String username, String groupname, String author) {
         entityManager.getTransaction().begin();
         Query query = entityManager.createQuery("SELECT u FROM User u WHERE u.username=:username").setParameter("username", username);
         User u = (User) query.getSingleResult();
@@ -150,27 +139,29 @@ public class UserRepo {
         System.out.println("GRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRROOOUUPP" + "   " + Ugroups);
 
         entityManager.getTransaction().commit();
+        AuditLogRepo.createLog(u, "Removing " + u.getUsername() +  "from " + grp.getGroupname(), author);
+
     }
 
 
 
     @Transactional(rollbackOn = Exception.class)
-    public String resetPassword(String oldPassword, String newPassword, boolean adm, String userName) throws NoSuchAlgorithmException, UnsupportedEncodingException{
+    public String resetPassword(String oldPassword, String newPassword, boolean adm, String author) throws NoSuchAlgorithmException, UnsupportedEncodingException{
         entityManager.getTransaction().begin();
 
-        Query query = entityManager.createQuery("SELECT u FROM User u WHERE u.username=:username").setParameter("username", userName);
+        Query query = entityManager.createQuery("SELECT u FROM User u WHERE u.username=:username").setParameter("username", author);
         User u = (User) query.getSingleResult();
         System.out.println("U.GETPASSWORDDDD" + u.getPassword());
         System.out.println("U.USERNAAAMEE" + u.getUsername());
         System.out.println("HASSHEDD PASSWORDDD" + sha256(oldPassword));
 
-        if(adm || u.getPassword().equals(oldPassword)) {
-                Query query2 = entityManager.createQuery("SELECT u FROM User u WHERE u.password=:oldPassword").setParameter("oldPassword", oldPassword);
+        if(adm || u.getPassword().equals(sha256(oldPassword))) {
+                Query query2 = entityManager.createQuery("SELECT u FROM User u WHERE u.password=:oldPassword").setParameter("oldPassword", sha256(oldPassword));
                 User user = (User) query2.getSingleResult();
                 user.setPassword(sha256(newPassword));
                 entityManager.getTransaction().commit();
+                AuditLogRepo.createLog(u, "Password reset to user: " + u.getUsername(), author);
                 return "Password Reset Successful";
-
 
         } else {
             entityManager.getTransaction().commit();
