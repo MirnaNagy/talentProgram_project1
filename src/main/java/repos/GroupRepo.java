@@ -1,4 +1,4 @@
-package Repos;
+package repos;
 
 import com.sumerge.program.JPAUtil;
 import entities.Group;

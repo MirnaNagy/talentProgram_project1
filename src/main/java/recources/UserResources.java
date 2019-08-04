@@ -1,10 +1,10 @@
-package Recources;
+package recources;
 
 
-import Objects.Delete_Undo;
-import Objects.MovingGroups;
-import Objects.PasswordReset;
-import Repos.UserRepo;
+import objects.Delete_Undo;
+import objects.MovingGroups;
+import objects.PasswordReset;
+import repos.UserRepo;
 import entities.User;
 
 import javax.ejb.EJB;

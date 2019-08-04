@@ -1,8 +1,8 @@
-package Repos;
+package repos;
 
 
-import Objects.Delete_Undo;
-import Objects.PasswordReset;
+import objects.Delete_Undo;
+import objects.PasswordReset;
 import com.sumerge.program.JPAUtil;
 import entities.Group;
 import entities.User;
@@ -165,7 +165,7 @@ public class UserRepo {
         System.out.println("GRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRROOOUUPP" + "   " + Ugroups);
 
         entityManager.getTransaction().commit();
-        AuditLogRepo.createLog(u, "Adding " + u.getUsername() +  "to " + grp.getGroupname(), author);
+        AuditLogRepo.createLog(u, "Adding " + u.getUsername() +  " to " + grp.getGroupname(), author);
         }
         catch(Exception e){
             entityManager.getTransaction().rollback();
@@ -190,7 +190,7 @@ public class UserRepo {
         System.out.println("GRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRROOOUUPP" + "   " + Ugroups);
 
         entityManager.getTransaction().commit();
-        AuditLogRepo.createLog(u, "Removing " + u.getUsername() +  "from " + grp.getGroupname(), author);
+        AuditLogRepo.createLog(u, "Removing " + u.getUsername() +  " from " + grp.getGroupname(), author);
         }
         catch(Exception e){
             entityManager.getTransaction().rollback();

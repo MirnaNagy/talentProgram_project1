@@ -1,4 +1,4 @@
-package Objects;
+package objects;
 
 public class MovingGroups {
     private String username;

@@ -1,7 +1,7 @@
-package Recources;
+package recources;
 
 
-import Repos.GroupRepo;
+import repos.GroupRepo;
 import entities.Group;
 
 import javax.ejb.EJB;
