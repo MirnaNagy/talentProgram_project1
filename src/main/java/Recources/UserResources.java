@@ -1,6 +1,10 @@
-package com.sumerge.program;
+package Recources;
 
 
+import Objects.Delete_Undo;
+import Objects.MovingGroups;
+import Objects.PasswordReset;
+import Repos.UserRepo;
 import entities.User;
 
 import javax.ejb.EJB;
@@ -34,9 +38,27 @@ public class UserResources {
     @Context
     private SecurityContext securityContext;
 
+
+
+    @Path("find")
+    @GET
+    public Response getUserByName(@QueryParam("username")String username) {
+        try {
+            return Response.ok().
+                    entity(repo.getUserByUsername(username, securityContext.isUserInRole("admin"), securityContext.getUserPrincipal().toString())).
+                    build();
+        } catch (Exception e) {
+            LOGGER.log(SEVERE, e.getMessage(), e);
+            return Response.serverError().
+                    entity(e.getClass() + ": " + e.getMessage()).
+                    build();
+        }
+    }
+
+
     @GET
     public Response getAllUsers() {
-        System.out.println("Name: "+securityContext.getUserPrincipal().toString());
+        System.out.println("NAAAAAMEEEEEEEEE: "+securityContext.getUserPrincipal().toString());
         System.out.println("Auth Scheme : "+securityContext.isUserInRole("admin"));
         try {
             return Response.ok().
@@ -70,11 +92,11 @@ public class UserResources {
 
     @Path("delete")
     @DELETE
-    public Response userDelete(User u) {
+    public Response userDelete(Delete_Undo u) {
         try {
 //            if (u.getUserID() == -1)
 //                throw new IllegalArgumentException("Can't delete User");
-            repo.deleteUser(u.getUsername(), u.getPassword(), securityContext.getUserPrincipal().toString());
+            repo.deleteUser(u, securityContext.getUserPrincipal().toString());
             return Response.ok().
                     build();
         } catch (Exception e) {
@@ -87,11 +109,11 @@ public class UserResources {
 
     @Path("undo")
     @PUT
-    public Response userUndoDelete(User u) {
+    public Response userUndoDelete(Delete_Undo u) {
         try {
 //            if (u.getUserID() == -1)
 //                throw new IllegalArgumentException("Can't delete User");
-            repo.undoDelete(u.getUsername(), u.getPassword(), securityContext.getUserPrincipal().toString());
+            repo.undoDelete(u, securityContext.getUserPrincipal().toString());
             return Response.ok().
                     build();
         } catch (Exception e) {
@@ -104,13 +126,14 @@ public class UserResources {
 
     @Path("addgroup")
     @PUT
-    public Response userAddGroup(@QueryParam("username")String username, @QueryParam("groupname") String groupname) {
-        try {
+    public Response userAddGroup(MovingGroups mv) {
+//        public Response userAddGroup(@QueryParam("username")String username, @QueryParam("groupname") String groupname) {
+            try {
 //            if (u.getUserID() == -1)
 //                throw new IllegalArgumentException("Can't delete User");
-            System.out.println("GRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRROOOUUPP FROM RESOURCES" + "   " + groupname + "   " + username);
+//            System.out.println("GRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRROOOUUPP FROM RESOURCES" + "   " + groupname + "   " + username);
 
-            repo.addUserToGroup(username, groupname, securityContext.getUserPrincipal().toString());
+            repo.addUserToGroup(mv.getUsername(), mv.getGroupname1(), securityContext.getUserPrincipal().toString());
             return Response.ok().
                     build();
         } catch (Exception e) {
@@ -124,13 +147,13 @@ public class UserResources {
 
     @Path("removegroup")
     @PUT
-    public Response userRemoveGroup(@QueryParam("username")String username, @QueryParam("groupname") String groupname) {
+    public Response userRemoveGroup(MovingGroups mv) {
         try {
 //            if (u.getUserID() == -1)
 //                throw new IllegalArgumentException("Can't delete User");
-            System.out.println("GRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRROOOUUPP FROM RESOURCES" + "   " + groupname + "   " + username);
+//            System.out.println("GRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRROOOUUPP FROM RESOURCES" + "   " + groupname + "   " + username);
 
-            repo.removeUserFromGroup(username, groupname, securityContext.getUserPrincipal().toString());
+            repo.removeUserFromGroup(mv.getUsername(), mv.getGroupname1(), securityContext.getUserPrincipal().toString());
             return Response.ok().
                     build();
         } catch (Exception e) {
@@ -144,19 +167,26 @@ public class UserResources {
 
     @Path("movegroup")
     @PUT
-    public Response userMoveGroup(@QueryParam("username")String username, @QueryParam("groupname") String groupname, @QueryParam("groupname2") String groupname2) {
-        try {
+    public Response userMoveGroup(MovingGroups mv) {
+        if(securityContext.isUserInRole("admin")) {
+            try {
 //            if (u.getUserID() == -1)
 //                throw new IllegalArgumentException("Can't delete User");
-            System.out.println("GRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRROOOUUPP FROM RESOURCES" + "   " + groupname + "   " + username);
-            repo.removeUserFromGroup(username, groupname, securityContext.getUserPrincipal().toString());
-            repo.addUserToGroup(username,groupname2, securityContext.getUserPrincipal().toString());
-            return Response.ok().
-                    build();
-        } catch (Exception e) {
-            LOGGER.log(SEVERE, e.getMessage(), e);
+//            System.out.println("GRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRROOOUUPP FROM RESOURCES" + "   " + groupname + "   " + username);
+                repo.removeUserFromGroup(mv.getUsername(), mv.getGroupname1(), securityContext.getUserPrincipal().toString());
+                repo.addUserToGroup(mv.getUsername(), mv.getGroupname2(), securityContext.getUserPrincipal().toString());
+                return Response.ok().
+                        build();
+            } catch (Exception e) {
+                LOGGER.log(SEVERE, e.getMessage(), e);
+                return Response.serverError().
+                        entity(e.getClass() + ": " + e.getMessage()).
+                        build();
+            }
+        }
+        else {
             return Response.serverError().
-                    entity(e.getClass() + ": " + e.getMessage()).
+                    entity("Action not available").
                     build();
         }
     }
@@ -164,11 +194,11 @@ public class UserResources {
 
     @Path("reset")
     @PUT
-    public Response userPasswordReset(@QueryParam("oldPassword") String oldPassword, @QueryParam("newPassword") String newPassword) {
+    public Response userPasswordReset(PasswordReset passwordReset) {
         try {
 //            if (u.getUserID() == -1)
 //                throw new IllegalArgumentException("Can't delete User");
-            String response = repo.resetPassword(oldPassword, newPassword, securityContext.isUserInRole("admin"), securityContext.getUserPrincipal().toString());
+            String response = repo.resetPassword(passwordReset, securityContext.isUserInRole("admin"), securityContext.getUserPrincipal().toString());
             return Response.ok().
                     entity(response).
                     build();

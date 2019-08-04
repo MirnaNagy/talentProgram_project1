@@ -10,7 +10,10 @@ import java.util.List;
 @NamedQueries({
         @NamedQuery(name="user.findAll_admin", query="SELECT usr FROM User usr"),
         @NamedQuery(name="user.findAll", query="SELECT usr.userID, usr.username, usr.email FROM User usr WHERE usr.delete = false")
+//        @NamedQuery(name="user.findUser_admin", query="SELECT usr FROM User usr WHERE usr.username=:username"),
+//        @NamedQuery(name="user.findUser", query="SELECT usr.userID, usr.username, usr.email FROM User usr WHERE usr.username=:username")
 })
+
 
 public class User implements Serializable {
 

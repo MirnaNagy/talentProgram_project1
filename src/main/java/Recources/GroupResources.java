@@ -1,6 +1,7 @@
-package com.sumerge.program;
+package Recources;
 
 
+import Repos.GroupRepo;
 import entities.Group;
 
 import javax.ejb.EJB;
@@ -33,11 +34,15 @@ public class GroupResources {
     @Context
     private SecurityContext securityContext;
 
+
+    //private boolean isAdmin = securityContext.isUserInRole("admin");
+    private String currentUserName = securityContext.getUserPrincipal().toString();
+
     @GET
     public Response getAllGroups() {
         try {
             return Response.ok().
-                    entity(repo.getAllGroups(securityContext.getUserPrincipal().toString())).
+                    entity(repo.getAllGroups(currentUserName)).
                     build();
         } catch (Exception e) {
             LOGGER.log(SEVERE, e.getMessage(), e);
@@ -53,7 +58,7 @@ public class GroupResources {
         try {
             if (g.getGroupID() == -1)
                 throw new IllegalArgumentException("Can't add Group");
-            repo.addGroup(g, securityContext.getUserPrincipal().toString());
+            repo.addGroup(g, currentUserName);
             return Response.ok().
                     build();
         } catch (Exception e) {
@@ -71,7 +76,7 @@ public class GroupResources {
         try {
             if (g.getGroupID() == -1)
                 throw new IllegalArgumentException("Can't add Group");
-            repo.deleteGroup(g, securityContext.getUserPrincipal().toString());
+            repo.deleteGroup(g, currentUserName);
             return Response.ok().
                     build();
         } catch (Exception e) {

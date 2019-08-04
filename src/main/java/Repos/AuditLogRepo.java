@@ -1,7 +1,8 @@
-package com.sumerge.program;
+package Repos;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sumerge.program.JPAUtil;
 import entities.AuditLog;
 
 import javax.persistence.EntityManager;
@@ -11,8 +12,6 @@ public class AuditLogRepo {
 
     static EntityManager entityManager = JPAUtil.getEntityManagerFactory().createEntityManager();
     static ObjectMapper om = new ObjectMapper();
-//    static AuditLog auditlog = new AuditLog();
-
 
     public static void createLog(Object o, String action, String author) {
         AuditLog auditlog = new AuditLog();
