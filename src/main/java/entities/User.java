@@ -1,4 +1,4 @@
-package Entities;
+package entities;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -7,9 +7,12 @@ import java.util.List;
 
 @Entity
 @Table(name = "user")
-@NamedQuery(name = "user.findAll", query="SELECT usr FROM user usr")
+@NamedQueries({
+        @NamedQuery(name="user.findAll_admin", query="SELECT usr FROM User usr"),
+        @NamedQuery(name="user.findAll", query="SELECT usr.userID, usr.username, usr.email FROM User usr WHERE usr.delete = false")
+})
 
-public class user implements Serializable {
+public class User implements Serializable {
 
     @Id
     @Column(name = "USERID")
@@ -32,7 +35,7 @@ public class user implements Serializable {
             name = "group_users",
             joinColumns = @JoinColumn(name = "USERID"),
             inverseJoinColumns = @JoinColumn(name = "GROUP_ID"))
-    List<group> groups;
+    List<Group> groups;
 
 
     public int getUserID() {
@@ -83,11 +86,11 @@ public class user implements Serializable {
         this.delete = delete;
     }
 
-    public List<group> getGroups() {
+    public List<Group> getGroups() {
         return groups;
     }
 
-    public void setGroups(List<group> groups) {
+    public void setGroups(List<Group> groups) {
         this.groups = groups;
     }
 }

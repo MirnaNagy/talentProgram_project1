@@ -5,6 +5,6 @@ import javax.ws.rs.core.Application;
 
 
 
-@ApplicationPath("users")
+@ApplicationPath("project")
 public class JAXRSConfiguration extends Application {
 }

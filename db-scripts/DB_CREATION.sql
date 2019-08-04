@@ -16,7 +16,8 @@ CREATE TABLE USERSDB.USER (
 
 
 INSERT INTO USERSDB.USER (USERID, USERNAME, EMAIL, PASSWORD, ROLE) VALUES (1, 'Ahmed', 'ahmed@gmail.com', 'ahmed', 'admin');
-INSERT INTO USERSDB.USER (USERID, USERNAME, EMAIL, PASSWORD, ROLE) VALUES (2, 'Amr', 'amr@gmail.com', 'amr', 'user');
+# INSERT INTO USERSDB.USER (USERID, USERNAME, EMAIL, PASSWORD, ROLE) VALUES (2, 'Amr', 'amr@gmail.com', 'amr', 'User');
+ UPDATE USERSDB.USER SET PASSWORD = SHA2(PASSWORD,256);
 # SELECT * FROM USERSDB.USER;
 
 CREATE TABLE USERSDB._GROUP (
@@ -32,7 +33,7 @@ CREATE TABLE USERSDB.GROUP_USERS(
                                     USERID BIGINT NOT NULL,
                                     GROUP_ID BIGINT NOT NULL,
                                     FOREIGN KEY (USERID)  REFERENCES USERSDB.USER(USERID),
-                                    FOREIGN KEY (GROUP_ID) REFERENCES USERSDB._GROUP(GROUP_ID ),
+                                    FOREIGN KEY (GROUP_ID) REFERENCES USERSDB._GROUP(GROUP_ID),
                                     PRIMARY KEY (USERID, GROUP_ID)
 );
 
