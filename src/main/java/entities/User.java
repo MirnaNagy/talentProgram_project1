@@ -1,4 +1,4 @@
-package Entities;
+package entities;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -6,15 +6,18 @@ import java.util.List;
 
 
 @Entity
-@Table(name = "users")
-//@NamedQuery(name = "employee.findAll", query="SELECT emp FROM employee emp")
+@Table(name = "user")
+@NamedQueries({
+        @NamedQuery(name="user.findAll_admin", query="SELECT usr FROM User usr"),
+        @NamedQuery(name="user.findAll", query="SELECT usr.userID, usr.username, usr.email FROM User usr WHERE usr.delete = false")
+})
 
-public class user implements Serializable {
+public class User implements Serializable {
 
     @Id
-    @Column(name = "USER_ID")
+    @Column(name = "USERID")
     //@GeneratedValue (strategy = GenerationType.IDENTITY)
-    private String userID;
+    private int userID;
     @Column (name = "USERNAME")
     private String username;
     @Column (name = "PASSWORD")
@@ -29,17 +32,17 @@ public class user implements Serializable {
 
     @ManyToMany
     @JoinTable(
-            name = "groupUsers",
-            joinColumns = @JoinColumn(name = "USER_ID"),
+            name = "group_users",
+            joinColumns = @JoinColumn(name = "USERID"),
             inverseJoinColumns = @JoinColumn(name = "GROUP_ID"))
-    List<group> groups;
+    List<Group> groups;
 
 
-    public String getUserID() {
+    public int getUserID() {
         return userID;
     }
 
-    public void setUserID(String userID) {
+    public void setUserID(int userID) {
         this.userID = userID;
     }
 
@@ -83,11 +86,11 @@ public class user implements Serializable {
         this.delete = delete;
     }
 
-    public List<group> getGroups() {
+    public List<Group> getGroups() {
         return groups;
     }
 
-    public void setGroups(List<group> groups) {
+    public void setGroups(List<Group> groups) {
         this.groups = groups;
     }
 }

@@ -1,12 +1,12 @@
 
 -- Author: WebSphere Education
-
+DROP SCHEMA USERSDB;
 CREATE SCHEMA USERSDB;
 
 -- Create and populate the tables used in the AUTHDB database
 
 CREATE TABLE USERSDB.USER (
-                              USER_ID BIGINT AUTO_INCREMENT PRIMARY KEY,
+                              USERID BIGINT AUTO_INCREMENT PRIMARY KEY,
                               USERNAME VARCHAR(60) NOT NULL,
                               PASSWORD VARCHAR(128) NOT NULL,
                               EMAIL CHAR(40),
@@ -15,8 +15,10 @@ CREATE TABLE USERSDB.USER (
 );
 
 
-INSERT INTO USERSDB.USER (USER_ID, USERNAME, EMAIL, PASSWORD, ROLE) VALUES (1, 'Ahmed', 'ahmed@gmail.com', 'ahmed', 'admin');
-INSERT INTO USERSDB.USER (USER_ID, USERNAME, EMAIL, PASSWORD, ROLE) VALUES (2, 'Amr', 'amr@gmail.com', 'amr', 'user');
+INSERT INTO USERSDB.USER (USERID, USERNAME, EMAIL, PASSWORD, ROLE) VALUES (1, 'Ahmed', 'ahmed@gmail.com', 'ahmed', 'admin');
+# INSERT INTO USERSDB.USER (USERID, USERNAME, EMAIL, PASSWORD, ROLE) VALUES (2, 'Amr', 'amr@gmail.com', 'amr', 'User');
+ UPDATE USERSDB.USER SET PASSWORD = SHA2(PASSWORD,256);
+# SELECT * FROM USERSDB.USER;
 
 CREATE TABLE USERSDB._GROUP (
                                 GROUP_ID BIGINT AUTO_INCREMENT PRIMARY KEY,
@@ -24,17 +26,20 @@ CREATE TABLE USERSDB._GROUP (
 );
 
 INSERT INTO USERSDB._GROUP (GROUP_ID, GROUPNAME) VALUES (1, 'Group1');
+INSERT INTO USERSDB._GROUP (GROUP_ID, GROUPNAME) VALUES (2, 'Group2');
 
 
 CREATE TABLE USERSDB.GROUP_USERS(
-                                    USER_ID BIGINT NOT NULL,
+                                    USERID BIGINT NOT NULL,
                                     GROUP_ID BIGINT NOT NULL,
-                                    FOREIGN KEY (USER_ID)  REFERENCES USERSDB.USER(ID),
-                                    FOREIGN KEY (GROUP_ID) REFERENCES USERSDB._GROUP(ID),
-                                    PRIMARY KEY (USER_ID, GROUP_ID)
+                                    FOREIGN KEY (USERID)  REFERENCES USERSDB.USER(USERID),
+                                    FOREIGN KEY (GROUP_ID) REFERENCES USERSDB._GROUP(GROUP_ID),
+                                    PRIMARY KEY (USERID, GROUP_ID)
 );
 
-INSERT INTO USERSDB.GROUP_USERS(USER_ID, GROUP_ID) VALUES (1,1);
+INSERT INTO USERSDB.GROUP_USERS(USERID, GROUP_ID) VALUES (1,1);
+INSERT INTO USERSDB.GROUP_USERS(USERID, GROUP_ID) VALUES (1,2);
+
 
 
 
