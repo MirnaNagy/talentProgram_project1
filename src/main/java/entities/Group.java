@@ -15,7 +15,7 @@ public class Group implements Serializable {
 
     @Id
     @Column(name = "GROUP_ID")
-    //@GeneratedValue (strategy = GenerationType.IDENTITY)
+    @GeneratedValue (strategy = GenerationType.IDENTITY)
     private int groupID;
     @Column (name = "GROUPNAME")
     private String groupname;

@@ -41,6 +41,17 @@ INSERT INTO USERSDB.GROUP_USERS(USERID, GROUP_ID) VALUES (1,1);
 INSERT INTO USERSDB.GROUP_USERS(USERID, GROUP_ID) VALUES (1,2);
 
 
+CREATE TABLE USERSDB.AUDITLOG(
+                                    ID BIGINT AUTO_INCREMENT PRIMARY KEY,
+                                    ENTITY TEXT,
+                                    ACTION VARCHAR(1000),
+                                    USERNAME VARCHAR(60),
+                                    TIME TIMESTAMP
+);
+
+
+
+
 
 
 

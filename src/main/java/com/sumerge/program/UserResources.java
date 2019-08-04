@@ -27,6 +27,7 @@ public class UserResources {
 
     @EJB
     private static UserRepo repo = new UserRepo();
+
     @Context
     HttpServletRequest request;
 
@@ -39,7 +40,7 @@ public class UserResources {
         System.out.println("Auth Scheme : "+securityContext.isUserInRole("admin"));
         try {
             return Response.ok().
-                    entity(repo.getAllUsers(securityContext.isUserInRole("admin"))).
+                    entity(repo.getAllUsers(securityContext.isUserInRole("admin"), securityContext.getUserPrincipal().toString())).
                     build();
         } catch (Exception e) {
             LOGGER.log(SEVERE, e.getMessage(), e);
@@ -55,7 +56,7 @@ public class UserResources {
         try {
             if (u.getUserID() == -1)
                 throw new IllegalArgumentException("Can't add User");
-            repo.addUser(u,securityContext.isUserInRole("admin"));
+            repo.addUser(u,securityContext.isUserInRole("admin"), securityContext.getUserPrincipal().toString());
             return Response.ok().
                     build();
         } catch (Exception e) {
@@ -73,7 +74,7 @@ public class UserResources {
         try {
 //            if (u.getUserID() == -1)
 //                throw new IllegalArgumentException("Can't delete User");
-            repo.deleteUser(u.getUsername(), u.getPassword());
+            repo.deleteUser(u.getUsername(), u.getPassword(), securityContext.getUserPrincipal().toString());
             return Response.ok().
                     build();
         } catch (Exception e) {
@@ -90,7 +91,7 @@ public class UserResources {
         try {
 //            if (u.getUserID() == -1)
 //                throw new IllegalArgumentException("Can't delete User");
-            repo.undoDelete(u.getUsername(), u.getPassword());
+            repo.undoDelete(u.getUsername(), u.getPassword(), securityContext.getUserPrincipal().toString());
             return Response.ok().
                     build();
         } catch (Exception e) {
@@ -109,7 +110,7 @@ public class UserResources {
 //                throw new IllegalArgumentException("Can't delete User");
             System.out.println("GRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRROOOUUPP FROM RESOURCES" + "   " + groupname + "   " + username);
 
-            repo.addUserToGroup(username, groupname);
+            repo.addUserToGroup(username, groupname, securityContext.getUserPrincipal().toString());
             return Response.ok().
                     build();
         } catch (Exception e) {
@@ -129,7 +130,7 @@ public class UserResources {
 //                throw new IllegalArgumentException("Can't delete User");
             System.out.println("GRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRROOOUUPP FROM RESOURCES" + "   " + groupname + "   " + username);
 
-            repo.removeUserFromGroup(username, groupname);
+            repo.removeUserFromGroup(username, groupname, securityContext.getUserPrincipal().toString());
             return Response.ok().
                     build();
         } catch (Exception e) {
@@ -148,8 +149,8 @@ public class UserResources {
 //            if (u.getUserID() == -1)
 //                throw new IllegalArgumentException("Can't delete User");
             System.out.println("GRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRROOOUUPP FROM RESOURCES" + "   " + groupname + "   " + username);
-            repo.removeUserFromGroup(username, groupname);
-            repo.addUserToGroup(username,groupname2);
+            repo.removeUserFromGroup(username, groupname, securityContext.getUserPrincipal().toString());
+            repo.addUserToGroup(username,groupname2, securityContext.getUserPrincipal().toString());
             return Response.ok().
                     build();
         } catch (Exception e) {
