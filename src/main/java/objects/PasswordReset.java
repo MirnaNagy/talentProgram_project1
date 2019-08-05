@@ -2,9 +2,13 @@ package objects;
 
 public class PasswordReset {
 
-    private String oldPassword;
-    private String newPassword;
+    public String oldPassword;
+    public String newPassword;
 
+    public PasswordReset(String oldPassword, String newPassword) {
+        this.oldPassword = oldPassword;
+        this.newPassword = newPassword;
+    }
 
     public String getOldPassword() {
         return oldPassword;

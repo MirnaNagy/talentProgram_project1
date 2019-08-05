@@ -90,13 +90,13 @@ public class UserResources {
     }
 
 
-    @Path("delete")
+    @Path("delete/{username}")
     @DELETE
-    public Response userDelete(Delete_Undo u) {
+    public Response userDelete(@PathParam("username")String un) {
         try {
 //            if (u.getUserID() == -1)
 //                throw new IllegalArgumentException("Can't delete User");
-            repo.deleteUser(u, securityContext.getUserPrincipal().toString());
+            repo.deleteUser(un, securityContext.getUserPrincipal().toString());
             return Response.ok().
                     build();
         } catch (Exception e) {
@@ -107,13 +107,13 @@ public class UserResources {
         }
     }
 
-    @Path("undo")
+    @Path("undo/{username}")
     @PUT
-    public Response userUndoDelete(Delete_Undo u) {
+    public Response userUndoDelete(@PathParam("username")String un) {
         try {
 //            if (u.getUserID() == -1)
 //                throw new IllegalArgumentException("Can't delete User");
-            repo.undoDelete(u, securityContext.getUserPrincipal().toString());
+            repo.undoDelete(un, securityContext.getUserPrincipal().toString());
             return Response.ok().
                     build();
         } catch (Exception e) {
@@ -195,10 +195,14 @@ public class UserResources {
     @Path("reset")
     @PUT
     public Response userPasswordReset(PasswordReset passwordReset) {
+        //@QueryParam("oldPassword") String oldPassword, @QueryParam("newPassword") String newPassword
+        System.out.println("OLD PASSWORD FROM RESOURCES " + passwordReset.getOldPassword());
+        System.out.println("NEW PASSWORD FROM RESOURCES " + passwordReset.getNewPassword());
         try {
 //            if (u.getUserID() == -1)
 //                throw new IllegalArgumentException("Can't delete User");
-            String response = repo.resetPassword(passwordReset, securityContext.isUserInRole("admin"), securityContext.getUserPrincipal().toString());
+
+            String response = repo.resetPassword(passwordReset.getOldPassword(),passwordReset.getNewPassword(), securityContext.isUserInRole("admin"), securityContext.getUserPrincipal().toString());
             return Response.ok().
                     entity(response).
                     build();

@@ -1,16 +1,10 @@
 package entities;
 
 
-import org.eclipse.persistence.jpa.jpql.parser.DateTime;
-import org.wildfly.swarm.container.runtime.cli.CommandLineArgs;
-import sun.util.calendar.BaseCalendar;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.sql.Date;
-import java.sql.Time;
 import java.sql.Timestamp;
-import java.time.format.DateTimeFormatter;
 
 @Entity
 @Table(name = "auditlog")

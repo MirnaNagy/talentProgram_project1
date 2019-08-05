@@ -41,6 +41,17 @@ public class User implements Serializable {
     List<Group> groups;
 
 
+    public User(String name, String password, String email, String role, boolean del) {
+        this.username = name;
+        this.password = password;
+        this.email = email;
+        this.role = role;
+        this.delete = del;
+    }
+
+    public User() {}
+
+
     public int getUserID() {
         return userID;
     }

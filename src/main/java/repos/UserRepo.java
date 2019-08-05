@@ -40,13 +40,13 @@ public class UserRepo {
         entityManager.getTransaction().begin();
         User u;
         if(adm) {
+            //TypedQuery<User> query = entityManager.createNamedQuery("user.findUser_admin", User.class).setParameter("username", username);
             Query query = entityManager.createQuery("SELECT usr FROM User usr WHERE usr.username=:username", User.class).setParameter("username", username);
-//            TypedQuery<User> query = entityManager.createNamedQuery("user.findUser_admin", User.class).setParameter("username", username);
             u = (User)query.getSingleResult();
         }
         else {
+            // TypedQuery<User> query = entityManager.createNamedQuery("user.findUser", User.class);
             Query query = entityManager.createQuery("SELECT usr.userID, usr.username, usr.email FROM User usr WHERE usr.username=:username", User.class).setParameter("username", username);
-//            TypedQuery<User> query = entityManager.createNamedQuery("user.findUser", User.class);
             u = (User) query.getSingleResult();
         }
         entityManager.getTransaction().commit();
@@ -94,7 +94,6 @@ public class UserRepo {
             entityManager.persist(u);
             entityManager.getTransaction().commit();
             AuditLogRepo.createLog(u, "Add user", author);
-
             //return u;
         }
         else {
@@ -110,13 +109,14 @@ public class UserRepo {
 
 
     @Transactional(rollbackOn = Exception.class)
-    public void deleteUser(Delete_Undo u, String author) throws UnsupportedEncodingException, NoSuchAlgorithmException {
+    public void deleteUser(String username, String author){
         try {
             entityManager.getTransaction().begin();
 //        entityManager.remove(u);
-            System.out.println("USERNAME" + u.getUsername());
-            System.out.println("PASSWORD" + u.getPassword());
-            Query query = entityManager.createQuery("SELECT u FROM User u WHERE u.username=:username AND u.password=:password ", User.class).setParameter("username", u.getUsername()).setParameter("password", sha256(u.getPassword()));
+//            System.out.println("USERNAME" + u.getUsername());
+//            System.out.println("PASSWORD" + u.getPassword());
+            Query query = entityManager.createQuery("SELECT u FROM User u WHERE u.username=:username", User.class).setParameter("username", username);
+//            .setParameter("password", sha256(u.getPassword()));
             User user = (User) query.getSingleResult();
             user.setDelete(true);
             entityManager.getTransaction().commit();
@@ -132,10 +132,10 @@ public class UserRepo {
 
 
     @Transactional(rollbackOn = Exception.class)
-    public void undoDelete(Delete_Undo u, String author) throws UnsupportedEncodingException, NoSuchAlgorithmException{
+    public void undoDelete(String username, String author){
         try{
         entityManager.getTransaction().begin();
-        Query query = entityManager.createQuery("SELECT u FROM User u WHERE u.username=:username AND u.password=:password ", User.class).setParameter("username", u.getUsername()).setParameter("password", sha256(u.getPassword()));
+        Query query = entityManager.createQuery("SELECT u FROM User u WHERE u.username=:username", User.class).setParameter("username", username);
         User user = (User) query.getSingleResult();
         user.setDelete(false);
         entityManager.getTransaction().commit();
@@ -197,13 +197,12 @@ public class UserRepo {
             e.getMessage();
 //            return null;
         }
-
     }
 
-
-
     @Transactional(rollbackOn = Exception.class)
-    public String resetPassword(PasswordReset pr, boolean adm, String author) throws NoSuchAlgorithmException, UnsupportedEncodingException{
+    public String resetPassword(String oldPassword, String newPassword, boolean adm, String author) throws NoSuchAlgorithmException, UnsupportedEncodingException{
+        System.out.println("HEEEELOOLLLOOOO FROM RESET PASSWORD");
+
         try{
         entityManager.getTransaction().begin();
 
@@ -211,14 +210,14 @@ public class UserRepo {
         User u = (User) query.getSingleResult();
         System.out.println("U.GETPASSWORDDDD" + u.getPassword());
         System.out.println("U.USERNAAAMEE" + u.getUsername());
-        System.out.println("HASSHEDD PASSWORDDD" + sha256(pr.getOldPassword()));
+        System.out.println("HASSHEDD PASSWORDDD" + sha256(oldPassword));
 
-        if(adm || u.getPassword().equals(sha256(pr.getOldPassword()))) {
-                Query query2 = entityManager.createQuery("SELECT u FROM User u WHERE u.password=:oldPassword").setParameter("oldPassword", sha256(pr.getOldPassword()));
+        if(adm || u.getPassword().equals(sha256(oldPassword))) {
+                Query query2 = entityManager.createQuery("SELECT u FROM User u WHERE u.password=:oldPassword").setParameter("oldPassword", sha256(oldPassword));
                 User user = (User) query2.getSingleResult();
-                user.setPassword(sha256(pr.getNewPassword()));
+                user.setPassword(sha256(newPassword));
                 entityManager.getTransaction().commit();
-                AuditLogRepo.createLog(u, "Password reset to user: " + u.getUsername(), author);
+                AuditLogRepo.createLog(user, "Password reset to user: " + user.getUsername(), author);
                 return "Password Reset Successful";
 
         } else {
@@ -228,14 +227,10 @@ public class UserRepo {
         }
         catch(Exception e){
             entityManager.getTransaction().rollback();
-            e.getMessage();
-            return null;
+//            e.getMessage();
+            return e.getMessage();
         }
     }
-
-
-
-
 
 
 
